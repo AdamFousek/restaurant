@@ -18,7 +18,8 @@ class ReservationsTransformer
      *      numberOfTables: integer,
      *      reservationDatetime: string,
      *      specialRequest: string,
-     *      isConfirmed: boolean
+     *      isConfirmed: bool,
+     *      canBeRemoved: bool,
      * }>
      */
     public function transform(Collection $collection): array
@@ -42,7 +43,8 @@ class ReservationsTransformer
      *     numberOfTables: integer,
      *     reservationDatetime: string,
      *     specialRequest: string,
-     *     isConfirmed: boolean
+     *     isConfirmed: bool,
+     *     canBeRemoved: bool,
      * }
      */
     public function transformOne(Reservation $reservation): array

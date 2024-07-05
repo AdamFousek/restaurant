@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import {Head} from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import GuestLayout from "@/Layouts/GuestLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 defineProps<{
     canLogin?: boolean;
@@ -19,12 +19,8 @@ function handleImageError() {
 </script>
 
 <template>
-    <Head title="Welcome" />
-    <GuestLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h2>
-        </template>
-
+    <Head title="Welcome"/>
+    <AuthenticatedLayout>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center overflow-hidden">
@@ -32,5 +28,5 @@ function handleImageError() {
                 </div>
             </div>
         </div>
-    </GuestLayout>
+    </AuthenticatedLayout>
 </template>

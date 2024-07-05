@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use App\Models\User;
@@ -44,7 +46,11 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
+                'isAuth' => $user !== null,
                 'user' => $this->userTransformer->transform($user),
+            ],
+            'flash' => [
+                'alert' => $request->session()->get('alert'),
             ],
         ];
     }

@@ -36,16 +36,16 @@ const submit = () => {
     <GuestLayout>
         <Head title="Register"/>
 
-        <form @submit.prevent="submit" class="flex flex-col gap-4">
+        <form class="flex flex-col gap-4" @submit.prevent="submit">
             <div class="flex flex-col md:flex-row md:justify-between gap-4">
                 <div>
                     <InputLabel for="firstName" value="First Name"/>
 
                     <TextInput
                             id="firstName"
+                            v-model="form.firstName"
                             type="text"
                             class="mt-1 block w-full"
-                            v-model="form.firstName"
                             required
                             autofocus
                             autocomplete="name"
@@ -58,9 +58,9 @@ const submit = () => {
 
                     <TextInput
                             id="lastName"
+                            v-model="form.lastName"
                             type="text"
                             class="mt-1 block w-full"
-                            v-model="form.lastName"
                             required
                             autocomplete="name"
                     />
@@ -75,9 +75,9 @@ const submit = () => {
 
                 <TextInput
                         id="email"
+                        v-model="form.email"
                         type="email"
                         class="mt-1 block w-full"
-                        v-model="form.email"
                         required
                         autocomplete="username"
                 />
@@ -90,9 +90,9 @@ const submit = () => {
 
                 <TextInput
                         id="phoneNumber"
+                        v-model="form.phoneNumber"
                         type="tel"
                         class="mt-1 block w-full"
-                        v-model="form.phoneNumber"
                         required
                         autocomplete="username"
                         placeholder="+420123456789"
@@ -106,9 +106,9 @@ const submit = () => {
 
                 <TextInput
                         id="password"
+                        v-model="form.password"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="form.password"
                         required
                         autocomplete="new-password"
                 />
@@ -121,9 +121,9 @@ const submit = () => {
 
                 <TextInput
                         id="password_confirmation"
+                        v-model="form.password_confirmation"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="form.password_confirmation"
                         required
                         autocomplete="new-password"
                 />

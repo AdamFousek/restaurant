@@ -1,27 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Reservation;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\Response;
 
 class ReservationPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        //
-    }
-
-    /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Reservation $reservation): bool
     {
-        //
+        return $user->id === $reservation->user_id;
     }
 
     /**
@@ -29,7 +24,7 @@ class ReservationPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -37,7 +32,12 @@ class ReservationPolicy
      */
     public function update(User $user, Reservation $reservation): bool
     {
-        //
+        // do not update reservation in same day
+        if (!$reservation->reservation_datetime->diffInDays(new Carbon())) {
+            return false;
+        }
+
+        return $reservation->user_id === $user->id;
     }
 
     /**
@@ -45,22 +45,6 @@ class ReservationPolicy
      */
     public function delete(User $user, Reservation $reservation): bool
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Reservation $reservation): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Reservation $reservation): bool
-    {
-        //
+        return $reservation->user_id === $user->id;
     }
 }

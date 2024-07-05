@@ -14,9 +14,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', \App\Http\Controllers\DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/menu', \App\Http\Controllers\MenuController::class)->name('menu');
 
@@ -26,8 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::prefix('reservations')->group(function () {
-        Route::get('/my', [\App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
+        Route::get('/', [\App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
         Route::get('/create', [\App\Http\Controllers\ReservationController::class, 'create'])->name('reservations.create');
+        Route::delete('/{reservation}/destroy', [\App\Http\Controllers\ReservationController::class, 'destroy'])->name('reservations.destroy');
     });
 });
 

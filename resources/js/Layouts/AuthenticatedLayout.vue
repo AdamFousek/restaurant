@@ -1,18 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-import ToggleDarkMode from "@/Components/ToggleDarkMode.vue";
+import {computed, ref} from 'vue'
+import ApplicationLogo from '@/Components/ApplicationLogo.vue'
+import Dropdown from '@/Components/Dropdown.vue'
+import DropdownLink from '@/Components/DropdownLink.vue'
+import NavLink from '@/Components/NavLink.vue'
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue'
+import {Link, usePage} from '@inertiajs/vue3'
+import ToggleDarkMode from '@/Components/ToggleDarkMode.vue'
+import MyLink from "@/Components/MyLink.vue";
+import Alert from "@/Components/Alert.vue";
 
-const showingNavigationDropdown = ref(false);
+const showingNavigationDropdown = ref(false)
+
+const isAuth = usePage().props.auth.isAuth
+const user = usePage().props.auth.user
+
+const alert = computed(() => {
+    return usePage().props.flash.alert;
+});
 </script>
 
 <template>
-    <div>
+    <div class="text-gray-900 dark:text-gray-100">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
@@ -23,14 +32,18 @@ const showingNavigationDropdown = ref(false);
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
                                     <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
+                                            class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
                                     />
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
+                                <NavLink :href="route('menu')" :active="route().current('menu')">
+                                    Menu
+                                </NavLink>
+                                <NavLink v-if="isAuth" :href="route('reservations.index')"
+                                         :active="route().current('reservations.*')">
                                     My Reservations
                                 </NavLink>
                             </div>
@@ -38,26 +51,26 @@ const showingNavigationDropdown = ref(false);
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
+                            <div v-if="isAuth" class="ms-3 relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                    type="button"
+                                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.firstName }} {{ $page.props.auth.user.lastName }}
+                                                {{ user.firstName }} {{ user.lastName }}
 
                                                 <svg
-                                                    class="ms-2 -me-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
+                                                        class="ms-2 -me-0.5 h-4 w-4"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
                                                 >
                                                     <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
+                                                            fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd"
                                                     />
                                                 </svg>
                                             </button>
@@ -65,42 +78,47 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+                                        <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
                             </div>
-                            <ToggleDarkMode />
+                            <div v-else class="flex justify-between gap-4 mr-4">
+                                <MyLink :href="route('login')">Login</MyLink>
+                                <MyLink :href="route('register')">Register</MyLink>
+                            </div>
+                            <ToggleDarkMode/>
                         </div>
 
                         <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
+                            <ToggleDarkMode/>
                             <button
-                                @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
+                                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
+                                    @click="showingNavigationDropdown = !showingNavigationDropdown"
                             >
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
-                                        :class="{
+                                            :class="{
                                             hidden: showingNavigationDropdown,
                                             'inline-flex': !showingNavigationDropdown,
                                         }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16"
                                     />
                                     <path
-                                        :class="{
+                                            :class="{
                                             hidden: !showingNavigationDropdown,
                                             'inline-flex': showingNavigationDropdown,
                                         }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
                                     />
                                 </svg>
                             </button>
@@ -110,31 +128,32 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Responsive Navigation Menu -->
                 <div
-                    :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
-                    class="sm:hidden"
+                        :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
+                        class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Reservation
+                        <ResponsiveNavLink :href="route('menu')" :active="route().current('menu')">
+                            Menu
                         </ResponsiveNavLink>
                     </div>
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('reservations.index')" :active="route().current('reservations.*')">
+                        <ResponsiveNavLink v-if="isAuth" :href="route('reservations.index')"
+                                           :active="route().current('reservations.*')">
                             My Reservation
                         </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+                    <div v-if="isAuth" class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                         <div class="px-4">
                             <div class="font-medium text-base text-gray-800 dark:text-gray-200">
-                                {{ $page.props.auth.user.fistName }} {{ $page.props.auth.user.lastName }}
+                                {{ user.firstName }} {{ user.lastName }}
                             </div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
+                            <div class="font-medium text-sm text-gray-500">{{ user.email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -144,15 +163,17 @@ const showingNavigationDropdown = ref(false);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white dark:bg-gray-800 shadow" v-if="$slots.header">
+            <header v-if="$slots.header" class="bg-white dark:bg-gray-800 shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
             </header>
 
+            <Alert v-if="alert" :alert="alert"></Alert>
+
             <!-- Page Content -->
             <main>
-                <slot />
+                <slot/>
             </main>
         </div>
     </div>

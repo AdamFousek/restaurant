@@ -1,8 +1,20 @@
 <script setup lang="ts">
-
 import {Head} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Paginate from "@/Components/Paginate.vue";
+import type Reservation from "@/types/models/Reservation";
+import ReservationItem from "@/Pages/Reservations/partials/ReservationItem.vue";
+
+defineProps<{
+    reservations: Reservation[]
+    paginate: {
+        total: number
+        per_page: number
+        current_page: number
+        links: string[]
+    }
+}>()
 </script>
 
 <template>
@@ -17,9 +29,9 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <ReservationItem v-for="reservation in reservations" :key="reservation.id" :reservation="reservation" />
 
-                </div>
+                <Paginate v-if="reservations.length > 0" :pages="paginate.links" />
             </div>
         </div>
     </AuthenticatedLayout>

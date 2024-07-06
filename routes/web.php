@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('reservations')->group(function () {
         Route::get('/', [\App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
         Route::get('/create', [\App\Http\Controllers\ReservationController::class, 'create'])->name('reservations.create');
+        Route::post('/store', [\App\Http\Controllers\ReservationController::class, 'store'])->name('reservations.store');
         Route::delete('/{reservation}/destroy', [\App\Http\Controllers\ReservationController::class, 'destroy'])->name('reservations.destroy');
     });
 });

@@ -15,6 +15,7 @@ use App\Queries\Reservation\FindReservationQuery;
 use App\Queries\Reservation\FindReservationsHandler;
 use App\Repositories\Enum\ReservationOrderByEnum;
 use App\Services\PaginateService;
+use App\Services\ReservationService;
 use App\Transformers\Controllers\ReservationsTransformer;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +36,7 @@ class ReservationController extends Controller
         private readonly ReservationsTransformer $reservationsTransformer,
         private readonly PaginateService $paginateService,
         private readonly CancelReservationHandler $cancelReservationHandler,
+        private readonly ReservationService $reservationService,
     ) {
     }
 
@@ -70,7 +72,19 @@ class ReservationController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Reservations/Create');
+        $limitDays = config('restaurant.max_days_reservation', 30);
+        $tomorrow = (new Carbon())->addDay();
+        $limit = (new Carbon())->addDays($limitDays);
+        $availableDays = $this->reservationService->resolveDays($tomorrow, $limit);
+
+        $minHour = config('restaurant.min_hour', 11);
+        $maxHour = config('restaurant.max_hour', 20);
+
+        return Inertia::render('Reservations/Create', [
+            'availableDays' => $availableDays,
+            'minHour' => $minHour,
+            'maxHour' => $maxHour,
+        ]);
     }
 
     /**

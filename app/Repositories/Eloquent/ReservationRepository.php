@@ -10,6 +10,7 @@ use App\Models\Reservation;
 use App\Queries\Reservation\FindReservationByUserQuery;
 use App\Queries\Reservation\FindReservationQuery;
 use App\Repositories\ReservationRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 
@@ -67,5 +68,10 @@ class ReservationRepository implements ReservationRepositoryInterface
         Log::info("Reservation with id {$command->reservation->id} was canceled by user with id {$command->user->id}" );
 
         $command->reservation->delete();
+    }
+
+    public function getTablesByDate(Carbon $date): int
+    {
+        return Reservation::query()->whereDate('reservation_datetime', '=', $date)->count();
     }
 }

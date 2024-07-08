@@ -6,6 +6,11 @@ return [
     // Define how much tables a restaurant can offer
     'max_tables' => 30,
 
+    'notify_email' => 'restaurant-email@example.com',
+
+    // Defines how many days in advance you can make a reservation
+    'max_days_reservation' => 30,
+
     'menu' => [
         'monday' => [
             'soup' => [

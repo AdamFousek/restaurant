@@ -3,6 +3,14 @@ import {Head, router} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import CreateReservationForm from "@/Pages/Reservations/Forms/CreateReservationForm.vue";
+import type AvailableDays from "@/types/models/AvailableDays";
+
+defineProps<{
+    availableDays: AvailableDays
+    minHour: number
+    maxHour: number
+}>()
+
 </script>
 
 <template>
@@ -18,7 +26,7 @@ import CreateReservationForm from "@/Pages/Reservations/Forms/CreateReservationF
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
-                    <CreateReservationForm />
+                    <CreateReservationForm :availableDays="availableDays" :min-hour="minHour" :max-hour="maxHour" />
                 </div>
             </div>
         </div>

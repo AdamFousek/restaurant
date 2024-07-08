@@ -3,6 +3,43 @@ import {useForm} from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css"
+import type AvailableDays from "@/types/models/AvailableDays";
+import {onMounted, ref} from "vue";
+import type Marker from "@/types/models/Marker";
+
+const props = defineProps<{
+    availableDays: AvailableDays
+    minHour: number
+    maxHour: number
+}>()
+
+const markers = ref<Marker[]>([])
+const allowedDays = ref<Date[]>([])
+const availableHours = ref<number[]>([])
+const availableMinutes = ref<number[]>([])
+
+const hour = ref<number>(props.minHour)
+const minutes = ref<number>(0)
+
+onMounted(() => {
+    markers.value = props.availableDays.markers;
+
+    props.availableDays.days.forEach((day) => {
+        if (day.isAvailable) {
+            allowedDays.value.push(new Date(day.day))
+        }
+    })
+
+    for (let i = props.minHour; i <= props.maxHour; i++) {
+        availableHours.value.push(i);
+    }
+
+    for (let i = 0; i <= 60; i+=5) {
+        availableMinutes.value.push(i)
+    }
+})
 
 const form = useForm({
     date: '',
@@ -24,39 +61,53 @@ const createReservations = () => {
 
 <template>
     <form class="flex flex-col gap-4" @submit.prevent="createReservations">
-        <div class="flex flex-col md:flex-row md:justify-between gap-4">
-            <div>
-                <InputLabel for="date" value="Date"/>
+        <div class="self-center">
+            <InputLabel for="date" value="Date"/>
 
-                <input
-                        id="date"
-                        v-model="form.date"
-                        type="date"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                        required
-                        autofocus
-                />
+            <VueDatePicker
+                    month-name-format="long"
+                    :inline="true"
+                    hide-offset-dates
+                    auto-apply
+                    :enable-time-picker="false"
+                    v-model="form.date"
+                    model-type="dd.MM.yyyy"
+                    no-today
+                    :allowed-dates="allowedDays"
+                    :month-change-on-scroll="false"
+            />
 
-                <InputError class="mt-2" :message="form.errors.date"/>
-            </div>
-            <div>
-                <InputLabel for="time" value="Time"/>
+            <InputError class="mt-2" :message="form.errors.date"/>
+        </div>
 
-                <input
-                        id="time"
-                        v-model="form.time"
+        <div class="md:self-center">
+            <InputLabel for="time" value="Time"/>
+
+            <div class="flex justify-between gap-4">
+                <select
+                        id="hours"
+                        v-model="hour"
                         type="text"
                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         required
-                        autocomplete="name"
-                />
-
-                <InputError class="mt-2" :message="form.errors.time"/>
+                >
+                    <option v-for="availableHour in availableHours" :value="availableHour">{{ availableHour }}</option>
+                </select>
+                <select
+                        id="minutes"
+                        v-model="minutes"
+                        type="text"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        required
+                >
+                    <option v-for="availableMinute in availableMinutes" :value="availableMinute">{{ availableMinute }}</option>
+                </select>
             </div>
+
+            <InputError class="mt-2" :message="form.errors.time"/>
         </div>
 
-
-        <div>
+        <div class="md:self-center">
             <InputLabel for="numberOfTables" value="Number of tables"/>
 
             <input

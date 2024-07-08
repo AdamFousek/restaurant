@@ -11,19 +11,18 @@ class MenuService
 {
 
     /**
-     * @param Carbon|null $date
-     * @return array []|array{
-     *     soup: array {
+     * @return array []|array<int, array{
+     *     soup: array{
      *          name: string,
      *          content: string,
      *          price: string,
      *     },
-     *     main: array {
+     *     main: array{
      *          name: string,
      *          content: string,
      *          price: string,
      *     }
-     * }[]
+     * }>
      */
     public function provideForWeek(): array
     {

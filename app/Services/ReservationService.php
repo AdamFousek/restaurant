@@ -24,30 +24,16 @@ class ReservationService
      * @param Carbon $from
      * @param Carbon $to
      * @return array{
-     *      markers: array {
-     *          date: string,
-     *          type: string,
-     *          tooltip: array {
-     *              text: string,
-     *              color: string,
-     *          }[],
-     *      }[],
-     *      days: array{
-     *          day: string,
-     *          isAvailable: bool,
-     *      }[],
-     * }
+     *     day: string,
+     *     availableTables: integer,
+     * }[]
      */
     public function resolveDays(Carbon $from, Carbon $to): array
     {
-        $result = [
-            'markers' => [],
-            'days' => [],
-        ];
+        $result = [];
         $totalTables = config('restaurant.max_tables', 0);
 
         do {
-            $isAvailable = true;
             $tables = $this->getFromCache($from);
             if ($tables === null) {
                 $tables = $this->getTableReservationByDateHandler->handle(new GetTableReservationByDateQuery(
@@ -55,31 +41,16 @@ class ReservationService
                 ));
             }
 
-            if ($tables === $totalTables) {
-                $isAvailable = false;
-                // Marker created for fronted https://vue3datepicker.com/props/general-configuration/#markers
-                $marker = [
-                    'date' => $from->toISOString(),
-                    'type' => 'line',
-                    'tooltip' => [
-                        ['text' => 'This day is full', 'color' => 'red'],
-                    ],
-                ];
-
-                $result['markers'][] = $marker;
-            }
+            $result[] = [
+                'day' => $from->format('m.d.Y'),
+                'dayFormatted' => $from->format('d.m.Y'),
+                'availableTables' => max($totalTables - $tables, 0),
+            ];
 
             $this->setCache($from, $tables);
 
-
-            $result['days'][] = [
-                'day' => $from->toISOString(),
-                'isAvailable' => $isAvailable,
-            ];
-
             $from->addDay();
         } while ($from <= $to);
-
 
         return $result;
     }

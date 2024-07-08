@@ -6,18 +6,19 @@ namespace App\Http\Controllers;
 
 use App\Commands\Reservation\CancelReservationCommand;
 use App\Commands\Reservation\CancelReservationHandler;
+use App\Commands\Reservation\UpsertReservationCommand;
+use App\Commands\Reservation\UpsertReservationHandler;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
-use App\Queries\Reservation\FindReservationByUserHandler;
-use App\Queries\Reservation\FindReservationByUserQuery;
 use App\Queries\Reservation\FindReservationQuery;
 use App\Queries\Reservation\FindReservationsHandler;
+use App\Queries\Reservation\GetTableReservationByDateHandler;
+use App\Queries\Reservation\GetTableReservationByDateQuery;
 use App\Repositories\Enum\ReservationOrderByEnum;
 use App\Services\PaginateService;
 use App\Services\ReservationService;
 use App\Transformers\Controllers\ReservationsTransformer;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -37,6 +38,8 @@ class ReservationController extends Controller
         private readonly PaginateService $paginateService,
         private readonly CancelReservationHandler $cancelReservationHandler,
         private readonly ReservationService $reservationService,
+        private readonly UpsertReservationHandler $upsertReservationHandler,
+        private readonly GetTableReservationByDateHandler $getTableReservationByDateHandler,
     ) {
     }
 
@@ -90,9 +93,40 @@ class ReservationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReservationRequest $request)
+    public function store(StoreReservationRequest $request): RedirectResponse
     {
-        //
+        $data = $request->validated();
+
+        try {
+            $date = Carbon::createFromFormat('d.m.Y H:i', $data['date']) ?? Carbon::now();
+            $tablesOccupied = $this->getTableReservationByDateHandler->handle(new GetTableReservationByDateQuery(
+                $date
+            ));
+
+            // In case there will be several reservations at the same time
+            if ($tablesOccupied < $data['numberOfTables']) {
+                $this->withMessage(self::ALERT_ERROR, 'Not enough tables available for this date');
+
+                return redirect()->back();
+            }
+
+            $this->upsertReservationHandler->handle(new UpsertReservationCommand(
+                user: $this->getUser(),
+                date: $date,
+                tables: $data['numberOfTables'],
+                specialRequest: $data['specialRequest'] ?? '',
+            ));
+
+            $this->withMessage(self::ALERT_SUCCESS, 'Reservation was created');
+        } catch (Throwable $e) {
+            Log::error($e->getMessage(), ['exception' => $e]);
+
+            $this->withMessage(self::ALERT_ERROR, 'Something went wrong! Try again later.');
+
+            return redirect()->back();
+        }
+
+        return redirect()->route('reservations.index');
     }
 
     /**

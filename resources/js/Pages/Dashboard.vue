@@ -38,7 +38,7 @@ defineProps<{
                     <div v-else class="flex items-center gap-4">
                         <div class="font-bold text-lg">{{ reservation.reservationDatetime }}</div>
                         <div>Tables reserved: <span class="font-bold">{{ reservation.numberOfTables }}</span></div>
-                        <div>Special request: <span class="text-sm text-gray-500">{{ reservation.specialRequest }}</span></div>
+                        <div v-if="reservation.specialRequest">Special request: <span class="text-sm text-gray-500">{{ reservation.specialRequest }}</span></div>
                     </div>
                 </div>
             </div>

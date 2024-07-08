@@ -3,10 +3,10 @@ import {Head, router} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import CreateReservationForm from "@/Pages/Reservations/Forms/CreateReservationForm.vue";
-import type AvailableDays from "@/types/models/AvailableDays";
+import type Day from "@/types/models/Day";
 
 defineProps<{
-    availableDays: AvailableDays
+    availableDays: Day[]
     minHour: number
     maxHour: number
 }>()

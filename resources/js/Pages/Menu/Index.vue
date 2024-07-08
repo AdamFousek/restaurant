@@ -2,7 +2,7 @@
 import {Head} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import type Menu from '@/types/models/Menu';
-import {computed, ref} from 'vue';
+import {ref} from 'vue';
 
 const props = defineProps<{
     menu: Menu[]
@@ -24,9 +24,10 @@ const activeMenu = ref<Menu>(props.menu[0])
                     <div class="flex gap-2">
                         <div v-for="day in menu" :key="day.dayName"
                              @click="activeMenu = day"
-                             class="flex flex-col items-center bg-white dark:bg-gray-700 p-2 rounded-lg shadow-md cursor-pointer"
+                             class="flex flex-col items-center p-2 rounded-lg shadow-md cursor-pointer"
                              :class="{
-                                'bg-indigo-100 dark:bg-indigo-900': activeMenu.date === day.date
+                                'bg-indigo-100 dark:bg-indigo-900': activeMenu.date === day.date,
+                                'bg-white dark:bg-gray-700': activeMenu.date !== day.date
                              }"
                         >
                             <span class="font-bold dark:text-white">{{ day.dayName }}</span>

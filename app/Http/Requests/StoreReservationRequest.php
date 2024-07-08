@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Reservation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreReservationRequest extends FormRequest
@@ -13,7 +14,7 @@ class StoreReservationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('create', Reservation::class);
     }
 
     /**
@@ -24,7 +25,9 @@ class StoreReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date' => ['required', 'date', 'date_format:d.m.Y H:i'],
+            'numberOfTables' => ['required', 'integer', 'min:1'],
+            'specialRequest' => ['nullable', 'string'],
         ];
     }
 }

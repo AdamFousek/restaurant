@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Repositories\Eloquent;
 
 use App\Commands\Reservation\CancelReservationCommand;
+use App\Commands\Reservation\UpsertReservationCommand;
 use App\Models\Reservation;
 use App\Queries\Reservation\FindReservationByUserQuery;
 use App\Queries\Reservation\FindReservationQuery;
@@ -16,6 +17,17 @@ use Illuminate\Support\Facades\Log;
 
 class ReservationRepository implements ReservationRepositoryInterface
 {
+
+    public function upsert(UpsertReservationCommand $command): void
+    {
+        Reservation::create([
+            'user_id' => $command->user->id,
+            'reservation_datetime' => $command->date,
+            'number_of_tables' => $command->tables,
+            'special_request' => $command->specialRequest,
+        ]);
+    }
+
     public function byId(int $id): ?Reservation
     {
         $reservation = Reservation::find($id);
@@ -28,14 +40,14 @@ class ReservationRepository implements ReservationRepositoryInterface
         $builder = $query->user->reservations();
 
         if ($query->dateFrom !== null) {
-            $builder->whereDate('reservation_datetime', '>', $query->dateFrom);
+            $builder->whereDate('reservation_datetime', '>=', $query->dateFrom);
         }
 
         if ($query->dateTo !== null) {
-            $builder->whereDate('reservation_datetime', '<', $query->dateTo);
+            $builder->whereDate('reservation_datetime', '<=', $query->dateTo);
         }
 
-        $reservation = $builder->latest()->first();
+        $reservation = $builder->orderBy('reservation_datetime', 'asc')->first();
 
         return $reservation instanceof Reservation ? $reservation : null;
     }
@@ -72,6 +84,11 @@ class ReservationRepository implements ReservationRepositoryInterface
 
     public function getTablesByDate(Carbon $date): int
     {
-        return Reservation::query()->whereDate('reservation_datetime', '=', $date)->count();
+        $result = Reservation::query()
+            ->selectRaw('sum(reservations.number_of_tables) as sum, DATE(reservation_datetime) as date')
+            ->whereDate('reservation_datetime', '=', $date)
+            ->groupBy('date')->first();
+
+        return (int)$result?->sum;
     }
 }

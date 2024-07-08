@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Head} from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -24,7 +24,7 @@ function handleImageError() {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center overflow-hidden">
-                    <PrimaryButton>Create reservation</PrimaryButton>
+                    <PrimaryButton @click="router.visit(route('reservations.create'));">Create reservation</PrimaryButton>
                 </div>
             </div>
         </div>

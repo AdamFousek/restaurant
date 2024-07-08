@@ -1,4 +1,5 @@
 export default interface Day {
     day: string
-    isAvailable: boolean
+    dayFormatted: string
+    availableTables: number
 }

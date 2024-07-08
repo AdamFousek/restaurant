@@ -7,7 +7,7 @@ namespace App\Services;
 
 use App\Queries\Reservation\GetTableReservationByDateHandler;
 use App\Queries\Reservation\GetTableReservationByDateQuery;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class ReservationService
@@ -16,8 +16,7 @@ class ReservationService
 
     public function __construct(
         private readonly GetTableReservationByDateHandler $getTableReservationByDateHandler,
-    )
-    {
+    ) {
     }
 
     /**

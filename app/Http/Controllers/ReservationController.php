@@ -99,12 +99,15 @@ class ReservationController extends Controller
 
         try {
             $date = Carbon::createFromFormat('d.m.Y H:i', $data['date']) ?? Carbon::now();
+            $maxTables = config('restaurant.max_tables', 30);
             $tablesOccupied = $this->getTableReservationByDateHandler->handle(new GetTableReservationByDateQuery(
                 $date
             ));
 
             // In case there will be several reservations at the same time
-            if ($tablesOccupied < $data['numberOfTables']) {
+            $availableTables = max($maxTables - $tablesOccupied, 0);
+            $reservationTables = (int)$data['numberOfTables'];
+            if ($availableTables < $reservationTables) {
                 $this->withMessage(self::ALERT_ERROR, 'Not enough tables available for this date');
 
                 return redirect()->back();
@@ -113,7 +116,7 @@ class ReservationController extends Controller
             $this->upsertReservationHandler->handle(new UpsertReservationCommand(
                 user: $this->getUser(),
                 date: $date,
-                tables: $data['numberOfTables'],
+                tables: $reservationTables,
                 specialRequest: $data['specialRequest'] ?? '',
             ));
 
@@ -127,30 +130,6 @@ class ReservationController extends Controller
         }
 
         return redirect()->route('reservations.index');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateReservationRequest $request, Reservation $reservation)
-    {
-        //
     }
 
     /**

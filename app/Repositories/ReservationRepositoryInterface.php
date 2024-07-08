@@ -17,8 +17,6 @@ interface ReservationRepositoryInterface
 {
     public function upsert(UpsertReservationCommand $command): void;
 
-    public function byId(int $id);
-
     public function findOneByUser(FindReservationByUserQuery $query): ?Reservation;
 
     public function find(FindReservationQuery $query): LengthAwarePaginator;

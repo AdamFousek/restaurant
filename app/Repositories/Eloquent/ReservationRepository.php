@@ -28,13 +28,6 @@ class ReservationRepository implements ReservationRepositoryInterface
         ]);
     }
 
-    public function byId(int $id): ?Reservation
-    {
-        $reservation = Reservation::find($id);
-
-        return $reservation instanceof Reservation ? $reservation : null;
-    }
-
     public function findOneByUser(FindReservationByUserQuery $query): ?Reservation
     {
         $builder = $query->user->reservations();

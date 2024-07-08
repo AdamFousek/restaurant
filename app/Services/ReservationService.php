@@ -24,6 +24,7 @@ class ReservationService
      * @param Carbon $to
      * @return array{
      *     day: string,
+     *     dayFormatted: string,
      *     availableTables: integer,
      * }[]
      */

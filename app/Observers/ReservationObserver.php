@@ -27,15 +27,6 @@ readonly class ReservationObserver
     }
 
     /**
-     * Handle the Reservation "updated" event.
-     */
-    public function updated(Reservation $reservation): void
-    {
-        $date = $reservation->reservation_datetime;
-        $this->reservationService->pruneCache($date);
-    }
-
-    /**
      * Handle the Reservation "deleted" event.
      */
     public function deleted(Reservation $reservation): void

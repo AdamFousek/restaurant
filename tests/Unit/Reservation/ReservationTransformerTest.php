@@ -12,7 +12,7 @@ class ReservationTransformerTest extends TestCase
     /**
      * A basic unit test example.
      */
-    public function test_example(): void
+    public function test_reservation_transformer(): void
     {
         $reservationTransformer = new ReservationsTransformer();
 

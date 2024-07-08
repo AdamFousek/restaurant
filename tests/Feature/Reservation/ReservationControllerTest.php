@@ -38,4 +38,22 @@ class ReservationControllerTest extends TestCase
                 ->has('paginate')
             );
     }
+
+    public function test_reservation_create(): void
+    {
+        $user = $this->createUser();
+        $this->actingAs($user)
+            ->get(route('reservations.create'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reservations/Create')
+                ->has('minHour')
+                ->has('maxHour')
+                ->has('availableDays')
+                ->has('availableDays.0', fn (Assert $page) => $page
+                    ->has('day')
+                    ->has('dayFormatted')
+                    ->has('availableTables')
+                )
+            );
+    }
 }

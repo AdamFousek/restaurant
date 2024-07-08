@@ -16,7 +16,7 @@ class ReservationServiceTest extends TestCase
     /**
      * A basic unit test example.
      */
-    public function test_example(): void
+    public function test_reservation_service(): void
     {
         $user = $this->createUser();
         $datetime = new Carbon();

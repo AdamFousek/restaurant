@@ -34,4 +34,36 @@ class CreateReservationTest extends TestCase
         $this->assertEquals(2, $reservation->number_of_tables);
         $this->assertEquals(1, $reservation->special_request);
     }
+
+    public function test_reservation_store_tables_occupied(): void
+    {
+        $date = (new Carbon())->addDay();
+        $user = $this->createUser();
+        $response = $this->actingAs($user)
+            ->post(route('reservations.store', [
+                'date' => $date->format('d.m.Y H:i'),
+                'numberOfTables' => 31,
+                'specialRequest' => 'test',
+                ]
+            ));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('alert');
+        $flash = session('alert');
+        $this->assertEquals('error', $flash['type']);
+    }
+
+    public function test_reservation_store_error(): void
+    {
+        $user = $this->createUser();
+        $response = $this->actingAs($user)
+            ->post(route('reservations.store', [
+                'date' => 'invalid date',
+                'numberOfTables' => 31,
+                'specialRequest' => 'test',
+                ]
+            ));
+
+        $response->assertRedirect();
+    }
 }
